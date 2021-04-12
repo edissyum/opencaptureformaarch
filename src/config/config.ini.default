@@ -100,3 +100,11 @@ destination         =
 reconciliation      =
 separator_qr        = False
 generate_chrono     = False
+
+[REATTACH_DOCUMENT]
+active              = True
+action              = 571
+group               = 1
+basket              = 49
+ws_user_id          = 25
+status              = EENV

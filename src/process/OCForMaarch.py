@@ -18,6 +18,7 @@
 import os
 import shutil
 import sys
+import json
 
 from .FindDate import FindDate
 from .FindSubject import FindSubject
@@ -217,13 +218,9 @@ def process(args, file, log, separator, config, image, ocr, locale, web_service,
     # Create the searchable PDF if necessary
     if is_ocr is False:
         log.info('Start OCR on document before send it')
-        ocr.generate_searchable_pdf(file, tmp_folder, separator)
+        ocr.generate_searchable_pdf(file, tmp_folder)
         file_to_send = ocr.searchablePdf
     else:
-        if separator.convert_to_pdfa == 'True':
-            output_file = file.replace(separator.output_dir, separator.output_dir_pdfa)
-            separator.convert_to_pdfa_function(output_file, file, log)
-            file = output_file
         file_to_send = open(file, 'rb').read()
 
     if q is not None:
@@ -280,6 +277,25 @@ def process(args, file, log, separator, config, image, ocr, locale, web_service,
 
         if res:
             log.info("Insert OK : " + res)
+            # BEGIN OBR01
+            # If reattach is active and the origin document already exist,  reattach the new one to it
+            log.info("Reattach document is active : " + config.cfg['REATTACH_DOCUMENT']['active'])
+            if config.cfg['REATTACH_DOCUMENT']['active'] == 'True':
+                check_document_res = web_service.check_document(args['chrono'])
+                log.info("Reattach check result : " + str(check_document_res))
+                if check_document_res['resources']:
+                    res_id_origin = check_document_res['resources'][0]['res_id']
+                    res_id_signed = json.loads(res)['resId']
+
+                    log.info("Reatach res_id : " + str(res_id_origin)+ " to " + str(res_id_signed))                
+                    reattach_res = web_service.reattach_to_document(res_id_origin, res_id_signed, config)
+                    log.info("Reattach result : " + str(reattach_res))
+
+                    #change status of the document
+                    change_status_res = web_service.change_status(res_id_origin, config)
+                    log.info("Change status : " + str(change_status_res))
+            # END OBR01
+            
             if args.get('isMail') is None:
                 try:
                     os.remove(file)
