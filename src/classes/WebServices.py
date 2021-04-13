@@ -242,7 +242,7 @@ class WebServices:
             self.Log.error('More information : ' + str(e))
             return False
 
-    def reattach_to_document(self, res_id_origin, res_id_signed, config):
+    def reattach_to_document(self, res_id_origin, res_id_signed, typist, config):
         """
         Reattach signed document to the origin one
 
@@ -259,10 +259,9 @@ class WebServices:
             action_id = config.cfg['REATTACH_DOCUMENT']['action']
             group = config.cfg['REATTACH_DOCUMENT']['group']
             basket = config.cfg['REATTACH_DOCUMENT']['basket']
-            ws_user_id = config.cfg['REATTACH_DOCUMENT']['ws_user_id']
 
             res = requests.put(
-                self.baseUrl + 'resourcesList/users/' + ws_user_id + '/groups/' + group + '/baskets/' + basket + '/actions/' + action_id,
+                self.baseUrl + 'resourcesList/users/' + str(typist) + '/groups/' + group + '/baskets/' + basket + '/actions/' + action_id,
                 auth=self.auth, data=args,
                 headers={'Connection': 'close', 'Content-Type': 'application/json'
             })

@@ -102,10 +102,8 @@ separator_qr        = False
 generate_chrono     = False
 
 [REATTACH_DOCUMENT]
-active              = True
-action              = 571
+active              = False
+action              = 
 group               = 
 basket              = 
-ws_user_id          = 
 status              = 
-
